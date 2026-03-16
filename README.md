@@ -33,7 +33,7 @@ Se agrega la conexión a una base de datos "PostgreSQL".
 1. Clonar el repositorio:
 
 ```bash
-git clone <URL-del-repositorio>
+git clone <https://github.com/andfel1996-commits/proyecto-backend.git>
 
 
 2. Instalar dependencias:
