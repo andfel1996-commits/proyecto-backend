@@ -1,48 +1,32 @@
 const express = require('express');
 const router = express.Router();
 const asyncHandler = require('../middlewares/asyncHandler');
-const User = require('../models/User');
+const userController = require('../controllers/userController');
+const User = require('../models/User'); // Solo si lo necesitas para el POST directo
 
 router.get('/', (req, res) => {
-  res.render('index', { title: 'Inicio', active: 'home' });
+    res.render('index', { title: 'Inicio', active: 'home' });
 });
 
-router.get('/users', asyncHandler(async (req, res) => {
-  const users = await User.findAll({ order: [['createdAt', 'DESC']] });
-  res.render('users', { users, active: 'users' });
-}));
+// PASO 2: Listar con la lógica del controlador
+router.get('/users', asyncHandler(userController.listUsers));
 
 router.get('/users/new', (req, res) => {
-  res.render('newUser', { errors: [], oldData: {}, active: 'newUser' });
+    res.render('newUser', { errors: [], oldData: {}, active: 'newUser' });
 });
 
+// Rutas de PASO 3
 router.post('/users', asyncHandler(async (req, res) => {
-  const name = (req.body.name || '').trim();
-  const email = (req.body.email || '').trim().toLowerCase();
+    const { name, email } = req.body;
 
-  const errors = [];
-  if (!name) errors.push({ msg: 'El nombre es obligatorio' });
-  if (name && name.length < 3) errors.push({ msg: 'El nombre debe tener al menos 3 caracteres' });
+    // 1. Verifica que los datos lleguen
+    console.log('Datos recibidos:', { name, email });
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!email) errors.push({ msg: 'El correo electrónico es obligatorio' });
-  if (email && !emailRegex.test(email)) errors.push({ msg: 'Debe ser un correo electrónico válido' });
+    // 2. Intenta crear
+    await User.create({ name, email });
 
-  if (errors.length) {
-    return res.status(400).render('newUser', { errors, oldData: { name, email }, active: 'newUser' });
-  }
-
-  const existing = await User.findOne({ where: { email } });
-  if (existing) {
-    return res.status(400).render('newUser', {
-      errors: [{ msg: 'El correo electrónico ya está registrado' }],
-      oldData: { name, email },
-      active: 'newUser'
-    });
-  }
-
-  await User.create({ name, email });
-  res.redirect('/users');
+    // 3. ¡ESTA LÍNEA ES VITAL!
+    // Si falta o el código falla antes de llegar aquí, la página queda cargando.
+    return res.redirect('/users'); 
 }));
-
 module.exports = router;
