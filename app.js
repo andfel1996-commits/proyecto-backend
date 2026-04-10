@@ -16,15 +16,15 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/', indexRoutes);
 
+// Middleware de manejo de errores
+app.use(errorHandler);
+
 // Middleware para rutas no encontradas (404)
 app.use((req, res, next) => {
   const err = new Error('Ruta no encontrada');
   err.status = 404;
   next(err);
 });
-
-// Middleware de manejo de errores
-app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 
