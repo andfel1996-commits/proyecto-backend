@@ -9,18 +9,17 @@ Este entregable corresponde a la finalización del Módulo 7, cumpliendo con los
 
 ## Estructura del proyecto (Patrón MVC)
 
-/proyecto-backend  
-  |-- /config          # Configuración de conexión a PostgreSQL (Sequelize)
-  |-- /controllers     # Lógica de negocio (userController.js)
-  |-- /middlewares     # Manejo de errores y funciones asíncronas
-  |-- /models          # Modelos de datos (User.js con Sequelize)
-  |-- /public          # Archivos estáticos (CSS, Imágenes)
-  |-- /routes          # Definición de rutas (index.js)
-  |-- /views           # Motor de plantillas EJS (Vistas y Partials)
-  |-- .env             # Variables de entorno (Seguridad)
-  |-- app.js           # Punto de entrada de la aplicación
-  |-- README.md        # Documentación
----
+proyecto-backend/
+├── config/          # Configuración de conexión a PostgreSQL (Sequelize)
+├── controllers/     # Lógica de negocio (userController.js)
+├── middlewares/     # Manejo de errores y funciones asíncronas
+├── models/          # Modelos de datos (User.js con Sequelize)
+├── public/          # Archivos estáticos (CSS, Imágenes)
+├── routes/          # Definición de rutas (index.js)
+├── views/           # Motor de plantillas EJS (Vistas y Partials)
+├── .env             # Variables de entorno (Seguridad - No se sube al repo)
+├── app.js           # Punto de entrada de la aplicación
+└── README.md        # Documentación del proyecto
 
 🛠️ Tecnologías y Herramientas
 Backend: Node.js, Express.
@@ -39,21 +38,31 @@ Pruebas: Postman.
 
 ```bash
 git clone <https://github.com/andfel1996-commits/proyecto-backend.git>
-
+cd proyecto-backend
 
 2. Instalar dependencias:
 
 npm install
 
-3. Ejecutar el servidor en modo desarrollo (requiere nodemon):
+3. Configurar variables de entorno: Crea un archivo llamado .env en la raíz del proyecto y completa los siguientes datos con tus credenciales de PostgreSQL:
+PORT=3000
+DB_NAME=nombre_de_tu_db
+DB_USER=postgres
+DB_PASS=tu_contraseña
+DB_HOST=127.0.0.1
+DB_PORT=5432
+
+4. Sincronizar base de datos e iniciar: Si tienes nodemon instalado para desarrollo:
 
 npm run dev
 
-4. O ejecutar el servidor en modo producción:
+O para ejecución estándar:
 
 npm start
 
-5. Abrir en el navegador:
+5. Acceder a la aplicación: Abre tu navegador en http://localhost:3000
+
+
 
 http://localhost:3000
 
