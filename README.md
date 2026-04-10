@@ -1,32 +1,37 @@
 # TP Integrador JS - Andrés Sánchez
 
 ## Descripción del proyecto
+Este proyecto ha evolucionado de una persistencia simple en JSON a una aplicación robusta con arquitectura MVC, utilizando Node.js, Express y Sequelize ORM. Actualmente, la aplicación gestiona usuarios de forma persistente en una base de datos PostgreSQL, permitiendo un ciclo CRUD completo con validaciones de seguridad y paginación.
 
-Este proyecto es una aplicación web funcional desarrollada con Node.js y Express, que permite gestionar usuarios y datos persistidos en archivos planos JSON. Se utiliza el motor de plantillas EJS para servir contenido web dinámico y Bootstrap para el diseño visual.
-
-Este es el entregable correspondiente a la **Parte 1 – Módulo 6** del curso, donde se implementa la estructura inicial del servidor, rutas básicas, vistas y persistencia simple.  
-Se agrega la conexión a una base de datos "PostgreSQL".
+Este entregable corresponde a la finalización del Módulo 7, cumpliendo con los requisitos de integración de bases de datos relacionales y manejo avanzado de rutas.
 
 ---
 
-## Estructura del proyecto
+## Estructura del proyecto (Patrón MVC)
 
 /proyecto-backend  
-  |-- /data  
-      |-- users.json            # Archivo para persistencia de usuarios  
-  |-- /public  
-      |-- /images  
-          |-- logo.png          # Logo de la aplicación  
-  |-- /routes  
-      |-- users.js              # Rutas para gestión de usuarios  
-  |-- /views  
-      |-- index.ejs             # Vista principal  
-      |-- users.ejs             # Vista para listar usuarios  
-  |-- app.js                   # Archivo principal del servidor  
-  |-- package.json             # Dependencias y scripts  
-  |-- README.md                # Este archivo  
-
+  |-- /config          # Configuración de conexión a PostgreSQL (Sequelize)
+  |-- /controllers     # Lógica de negocio (userController.js)
+  |-- /middlewares     # Manejo de errores y funciones asíncronas
+  |-- /models          # Modelos de datos (User.js con Sequelize)
+  |-- /public          # Archivos estáticos (CSS, Imágenes)
+  |-- /routes          # Definición de rutas (index.js)
+  |-- /views           # Motor de plantillas EJS (Vistas y Partials)
+  |-- .env             # Variables de entorno (Seguridad)
+  |-- app.js           # Punto de entrada de la aplicación
+  |-- README.md        # Documentación
 ---
+
+🛠️ Tecnologías y Herramientas
+Backend: Node.js, Express.
+
+Base de Datos: PostgreSQL.
+
+ORM: Sequelize.
+
+Vistas: EJS & Bootstrap 5.
+
+Pruebas: Postman.
 
 ## Instalación y ejecución
 
@@ -52,16 +57,22 @@ npm start
 
 http://localhost:3000
 
-Funcionalidades implementadas
-Servidor Express configurado para servir contenido dinámico con EJS.
-Rutas básicas para listar y agregar usuarios.
-Persistencia de datos en archivos JSON (data/users.json).
-Barra de navegación con logo y enlaces usando Bootstrap.
-Formularios para agregar usuarios con validación básica.
+✅ Funcionalidades Implementadas
+CRUD Completo: Creación, Lectura, Edición y Eliminación de usuarios directamente en PostgreSQL.
 
-Reflexiones técnicas
-Aprendí a configurar un servidor Express con motor de vistas EJS y servir archivos estáticos.
-La persistencia con archivos planos es sencilla pero limitada; para proyectos futuros planeo integrar una base de datos relacional con ORM.
-La integración de Bootstrap facilita el diseño responsivo y profesional.
-Encontré desafíos en la gestión de rutas y manejo de datos, que resolví con pruebas y lectura de documentación.
-Próximos pasos: implementar ORM, autenticación JWT y API RESTful en los siguientes módulos.
+Paginación (Paso 2): Implementación de limit y offset en la consulta de usuarios para optimizar la carga.
+
+Validación de Identidad (Paso 3): El sistema verifica la existencia de un ID antes de proceder con la eliminación o edición, devolviendo un error 404 personalizado si no existe.
+
+Arquitectura MVC: Separación clara entre modelos, controladores y rutas para un código escalable.
+
+Pruebas en Postman: Endpoints testeados para envío de datos mediante x-www-form-urlencoded.
+
+🧠 Reflexiones Técnicas
+Transición a ORM: Sustituir la lógica de archivos JSON por Sequelize facilitó enormemente la integridad de los datos y la escalabilidad del proyecto.
+
+Manejo de Errores: La creación de un errorHandler centralizado permitió capturar excepciones de la base de datos (como campos nulos o IDs inexistentes) de forma profesional.
+
+Desafíos: Superé obstáculos en la configuración de promesas asíncronas y la sincronización de modelos con PostgreSQL, logrando una conexión estable y segura.
+
+Próximo paso (Módulo 8): Implementar seguridad con JWT y encriptación de contraseñas
