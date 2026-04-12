@@ -1,79 +1,57 @@
 const express = require('express');
 const router = express.Router();
+const authController = require('../controllers/authController');
+const userController = require('../controllers/userController');
+const authMiddleware = require('../middlewares/auth');
+const upload = require('../middlewares/upload');
 const asyncHandler = require('../middlewares/asyncHandler');
 const User = require('../models/User');
 
-// --- Usuarios (Lectura - Paso 2) ---
-router.get('/users', asyncHandler(async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = 10;
-  const offset = (page - 1) * limit;
+// --- Auth ---
+router.post('/register', asyncHandler(authController.register));
+router.post('/login', asyncHandler(authController.login));
 
-  const users = await User.findAll({ 
-    limit, 
-    offset, 
-    order: [['createdAt', 'DESC']] 
-  });
-  
-  // CAMBIO: Si quieres ver JSON en Postman, usa res.json
-  res.json({
-    ok: true,
-    data: users,
-    page,
-    limit
-  });
-}));
+// --- Usuarios ---
+router.get('/users', asyncHandler(userController.getUsers));
 
-// --- Crear Usuario ---
-router.post('/users', asyncHandler(async (req, res) => {
-  const { name, email } = req.body;
-  const newUser = await User.create({ name, email });
-  
-  // CAMBIO: Devolvemos el usuario creado en formato JSON
-  res.status(201).json({
-    ok: true,
-    message: "Usuario creado con éxito",
-    user: newUser
-  });
-}));
+// --- Rutas Protegidas ---
+router.post('/users/update/:id', authMiddleware, asyncHandler(userController.updateUser));
+router.post('/users/delete/:id', authMiddleware, asyncHandler(userController.deleteUser));
 
-// --- Editar Usuario (Paso 3) ---
-router.post('/users/update/:id', asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const { name, email } = req.body;
-  
-  const user = await User.findByPk(id);
-  
-  if (!user) {
-    return res.status(404).json({ ok: false, message: "ID no encontrado" });
-  }
+// --- Subida de Archivos ---
+router.post('/upload', authMiddleware, (req, res) => {
+    upload.single('avatar')(req, res, async (err) => { // Agregamos async aquí
+        console.log("--- DEBUG SUBIDA ---");
+        
+        if (err) {
+            console.error("Error Multer:", err);
+            return res.status(400).json({ ok: false, message: err.message });
+        }
+        
+        if (!req.file) {
+            return res.status(400).json({ ok: false, message: "No se recibió archivo" });
+        }
 
-  await user.update({ name, email });
-  
-  // CAMBIO: Devolvemos el usuario actualizado
-  res.json({
-    ok: true,
-    message: "Usuario actualizado",
-    user
-  });
-}));
-
-// --- Eliminar Usuario (Paso 3) ---
-router.post('/users/delete/:id', asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const user = await User.findByPk(id);
-
-  if (!user) {
-    return res.status(404).json({ ok: false, message: "El ID no existe" });
-  }
-
-  await user.destroy();
-  
-  // CAMBIO: Confirmación de borrado
-  res.json({
-    ok: true,
-    message: `Usuario con ID ${id} eliminado correctamente`
-  });
-}));
-
+        try {
+            // Buscamos al usuario usando el ID que viene en el token (req.user.id)
+            const user = await User.findByPk(req.user.id);
+            
+            if (user) {
+                // Actualizamos el campo avatar con la ruta del archivo
+                await user.update({ avatar: `/uploads/${req.file.filename}` });
+                
+                return res.json({ 
+                    ok: true, 
+                    message: "Imagen guardada en BD",
+                    url: `/uploads/${req.file.filename}` 
+                });
+            } else {
+                return res.status(404).json({ ok: false, message: "Usuario no encontrado" });
+            }
+        } catch (dbError) {
+            console.error("Error al actualizar BD:", dbError);
+            return res.status(500).json({ ok: false, message: "Error al guardar en base de datos" });
+        }
+    });
+});
 module.exports = router;

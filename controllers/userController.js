@@ -1,6 +1,7 @@
 const User = require('../models/User');
 
 // GET - Listar con Paginación (Paso 2)
+// GET - Listar con Paginación
 exports.getUsers = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 5; 
@@ -9,18 +10,21 @@ exports.getUsers = async (req, res) => {
     const { count, rows } = await User.findAndCountAll({
         limit,
         offset,
-        attributes: { exclude: ['password'] }, // Seguridad
+        attributes: { exclude: ['password'] }, 
         order: [['createdAt', 'DESC']]
     });
 
-    res.render('users', { 
+    // CAMBIA ESTO:
+    // res.render('users', { ... });
+
+    // POR ESTO:
+    res.json({ 
+        ok: true,
         users: rows, 
         totalPaginas: Math.ceil(count / limit),
-        paginaActual: page,
-        active: 'users' 
+        paginaActual: page
     });
 };
-
 // POST - Crear Usuario
 exports.createUser = async (req, res) => {
     const { name, email } = req.body;

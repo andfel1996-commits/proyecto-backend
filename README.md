@@ -1,87 +1,91 @@
-# TP Integrador JS - Andrés Sánchez
+# TP Integrador JS - Andrés Sánchez (Final Módulo 8 - API RESTful)
 
-## Descripción del proyecto
-Este proyecto ha evolucionado de una persistencia simple en JSON a una aplicación robusta con arquitectura MVC, utilizando Node.js, Express y Sequelize ORM. Actualmente, la aplicación gestiona usuarios de forma persistente en una base de datos PostgreSQL, permitiendo un ciclo CRUD completo con validaciones de seguridad y paginación.
 
-Este entregable corresponde a la finalización del Módulo 7, cumpliendo con los requisitos de integración de bases de datos relacionales y manejo avanzado de rutas.
+## 📝 Descripción del proyecto
+Esta aplicación ha evolucionado hacia una **API RESTful completa**, integrando los conocimientos de los módulos 6, 7 y 8. Se ha implementado un sistema de **Autenticación robusto**, persistencia en **PostgreSQL** mediante **Sequelize** y gestión de archivos multimedia.
+
+Este entregable consolida el ciclo de backend: estructura profesional, seguridad avanzada, lógica de negocio y exposición de endpoints protegidos.
 
 ---
 
-## Estructura del proyecto (Patrón MVC)
+## 📂 Estructura del proyecto (Patrón MVC)
 
+```text
 proyecto-backend/
-├── config/          # Configuración de conexión a PostgreSQL (Sequelize)
-├── controllers/     # Lógica de negocio (userController.js)
-├── middlewares/     # Manejo de errores y funciones asíncronas
-├── models/          # Modelos de datos (User.js con Sequelize)
-├── public/          # Archivos estáticos (CSS, Imágenes)
-├── routes/          # Definición de rutas (index.js)
-├── views/           # Motor de plantillas EJS (Vistas y Partials)
-├── .env             # Variables de entorno (Seguridad - No se sube al repo)
-├── app.js           # Punto de entrada de la aplicación
-└── README.md        # Documentación del proyecto
+├── config/          # Conexión a PostgreSQL (Sequelize)
+├── controllers/     # Lógica: authController.js y userController.js
+├── middlewares/     # Auth (JWT), Upload (Multer) y ErrorHandler
+├── models/          # Modelo User (Hooks de Bcrypt y Scopes)
+├── public/          # Assets y /uploads para imágenes
+├── routes/          # Endpoints de la API (index.js)
+├── .env             # Variables sensibles (No incluido en el repo)
+├── .env.example     # Plantilla para configuración de entorno
+├── app.js           # Servidor y configuración principal
+└── README.md        # Documentación técnica
 
-🛠️ Tecnologías y Herramientas
-Backend: Node.js, Express.
+🛠️ Tecnologías y Seguridad
+Backend: Node.js & Express.
 
-Base de Datos: PostgreSQL.
+Seguridad: JSON Web Tokens (JWT) para sesiones y Bcryptjs para hasheo de contraseñas.
 
-ORM: Sequelize.
+ORM & DB: Sequelize con PostgreSQL.
 
-Vistas: EJS & Bootstrap 5.
+Archivos: Multer para procesamiento de imágenes.
 
-Pruebas: Postman.
+Pruebas: Documentación testeada íntegramente en Postman.
 
-## Instalación y ejecución
+## Instalación y Configuración
 
 1. Clonar el repositorio:
 
-```bash
+bash
 git clone <https://github.com/andfel1996-commits/proyecto-backend.git>
 cd proyecto-backend
-
-2. Instalar dependencias:
-
 npm install
 
-3. Configurar variables de entorno: Crea un archivo llamado .env en la raíz del proyecto y completa los siguientes datos con tus credenciales de PostgreSQL:
+2. Variables de Entorno: Crea un archivo .env con:
+
+
 PORT=3000
-DB_NAME=nombre_de_tu_db
+DB_NAME=tu_db
 DB_USER=postgres
-DB_PASS=tu_contraseña
+DB_PASS=tu_password
 DB_HOST=127.0.0.1
 DB_PORT=5432
+JWT_SECRET=tu_clave_secreta_jwt
 
-4. Sincronizar base de datos e iniciar: Si tienes nodemon instalado para desarrollo:
+3.Iniciar servidor:
 
 npm run dev
 
-O para ejecución estándar:
+🚀 Guía de Uso de la API (Postman)
 
-npm start
+Autenticación (Pública)
+Registro (POST /register): Crea un usuario. La contraseña se encripta automáticamente.
 
-5. Acceder a la aplicación: Abre tu navegador en http://localhost:3000
+Login (POST /login): Devuelve un Token JWT necesario para rutas protegidas.
+
+Rutas Protegidas (Requieren Header Authorization: Bearer <token>)
+Subida de Avatar (POST /upload): Carga una imagen usando form-data (campo avatar).
+
+Actualizar Usuario (POST /users/update/:id): Modificación de datos persistidos.
+
+Eliminar Usuario (POST /users/delete/:id): Borrado físico con validación previa de existencia.
+
+✅ Funcionalidades Módulo 8
 
 
+Protección de Rutas: Middleware de autenticación que valida el token antes de acceder a procesos críticos.
 
-http://localhost:3000
+Encriptación de Datos: Uso de hooks en Sequelize para asegurar que las contraseñas nunca se guarden en texto plano.
 
-✅ Funcionalidades Implementadas
-CRUD Completo: Creación, Lectura, Edición y Eliminación de usuarios directamente en PostgreSQL.
+Gestión de Archivos: Configuración de Multer con filtros de tipo de archivo (solo imágenes) y límites de tamaño.
 
-Paginación (Paso 2): Implementación de limit y offset en la consulta de usuarios para optimizar la carga.
-
-Validación de Identidad (Paso 3): El sistema verifica la existencia de un ID antes de proceder con la eliminación o edición, devolviendo un error 404 personalizado si no existe.
-
-Arquitectura MVC: Separación clara entre modelos, controladores y rutas para un código escalable.
-
-Pruebas en Postman: Endpoints testeados para envío de datos mediante x-www-form-urlencoded.
+API de Consumo Externo: Respuestas en formato JSON con códigos de estado HTTP estandarizados (200, 201, 401, 404).
 
 🧠 Reflexiones Técnicas
-Transición a ORM: Sustituir la lógica de archivos JSON por Sequelize facilitó enormemente la integridad de los datos y la escalabilidad del proyecto.
+Seguridad: La implementación de JWT y Bcrypt transformó el proyecto en una herramienta real y segura, protegiendo la integridad del usuario.
 
-Manejo de Errores: La creación de un errorHandler centralizado permitió capturar excepciones de la base de datos (como campos nulos o IDs inexistentes) de forma profesional.
+Escalabilidad: Al separar la lógica de autenticación en controladores y middlewares específicos, el código quedó preparado para crecer sin desorden.
 
-Desafíos: Superé obstáculos en la configuración de promesas asíncronas y la sincronización de modelos con PostgreSQL, logrando una conexión estable y segura.
-
-Próximo paso (Módulo 8): Implementar seguridad con JWT y encriptación de contraseñas
+Aprendizaje Integrado: Este proyecto demuestra la capacidad de iterar sobre una base de código, migrando de archivos JSON a una base de datos relacional y finalmente a una API protegida.
